@@ -4,55 +4,55 @@
 
 using namespace std;
 
-void call_patient(map<string, string> &registry)
+void call_patient(map<string, int> &registry)
 {
-    map<string, string>::iterator caller = registry.begin();
-    cout << "Calling patient: " << caller->second << endl;
-    registry.erase(caller);
+    string caller = registry.begin()->first;
+    if (registry.begin()->second == 1)
+    {
+        registry.erase(registry.begin());
+    }
+    else
+    {
+        registry.begin()->second--;
+    }
+
+    cout << "Calling " << caller << endl;
 }
 
-void add_patient(map<string, string> &registry, string last_name, int &count)
+void add_patient(map<string, int> &registry, string last_name)
 {
-    cout << "Input patient`s last name: ";
-    cin >> last_name;
-    registry.insert(pair<string, string> (last_name + to_string(count), last_name));
-    count++;
+    map<string, int>::iterator it_patient = registry.find(last_name);
+    if (it_patient == registry.end())
+    {
+        registry[last_name] = 1;
+    }
+    else
+    {
+        registry[last_name] += 1;
+    }
 }
 
 int main()
 {
     string command;
-    string last_name;
-    int count = 0;
-    map<string, string> registry;
-
-    cout << "Enter command (next, new or exit): ";
-    cin >> command;
+    map<string, int> registry;
 
     while (command != "exit")
     {
+        cout << "Enter command: ";
+        cin >> command;
+
         if (command == "next")
         {
             if (registry.empty())
             {
-                cout << "Registry is empty!" << endl;
-                break;
+                cout << "No patients, enter exit or last name: ";
             }
             call_patient(registry);
-            cout << endl << "Enter command (next, new or exit): ";
-            cin >> command;
-        }
-        else if (command == "new")
-        {
-            add_patient(registry, last_name, count);
-            cout << endl << "Enter command (next, new or exit): ";
-            cin >> command;
         }
         else
         {
-            cerr << "Unknown command" << endl;
-            cout << "Enter command (next, new or exit): ";
-            cin >> command;
+            add_patient(registry, command);
         }
     }
 }
